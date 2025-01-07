@@ -1,0 +1,14 @@
+# ninja log v6
+7	4859	7579175126107549	build.ninja	706995fa787eb9ed
+36	739	7579174487928436	CMakeFiles/matrices_mult.dir/main.cpp.obj	b8b2029501925c7e
+740	1061	7579174494970930	matrices_mult.exe	92b657d517a9bad4
+4	1247	7579185576790210	CMakeFiles/matrices_mult.dir/main.cpp.obj	b8b2029501925c7e
+1248	1476	7579185589233585	matrices_mult.exe	92b657d517a9bad4
+2	1252	7579195222052617	CMakeFiles/matrices_mult.dir/main.cpp.obj	b8b2029501925c7e
+1253	1481	7579195234551079	matrices_mult.exe	92b657d517a9bad4
+3	1280	7579212923189169	CMakeFiles/matrices_mult.dir/main.cpp.obj	b8b2029501925c7e
+1281	1497	7579212935971808	matrices_mult.exe	92b657d517a9bad4
+4	692	7579213397977656	CMakeFiles/matrices_mult.dir/main.cpp.obj	b8b2029501925c7e
+694	970	7579213404880280	matrices_mult.exe	92b657d517a9bad4
+3	846	7579213551988217	CMakeFiles/matrices_mult.dir/main.cpp.obj	b8b2029501925c7e
+847	1014	7579213560428570	matrices_mult.exe	92b657d517a9bad4
