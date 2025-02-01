@@ -52,7 +52,7 @@ void multiplicar_matriz(double* A, double* x, double* b, int rows, int cols)
  * A(MATRIX_DIM x MATRIX_DIM) * x(MATRIX_DIM x 1) = b(MATRIX_DIM x 1)
  * A(25 x 25) * x(25 x 1) = b(25 x 1)
  *
- * Al no usar el ceil, la división no queda como lo visto en clase, ie, filas_por_rank[4] = {7, 7, 7, 4};, sino:
+ * Al no usar el ceil ni double, la división no queda como lo visto en clase, ie, filas_por_rank[4] = {7, 7, 7, 4};, sino:
  *  filas_por_rank: 6 6 6 7
     bloques1: 150 150 150 175
     desplazamientos1: 0 150 300 450
@@ -65,14 +65,9 @@ int main(int argc, char* argv[]){
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
 
-    int e, f;
-    if (MATRIX_DIM % nprocs != 0){
-        e = MATRIX_DIM / nprocs;
-        f = MATRIX_DIM - e * (nprocs - 1);
-    }else{
-        e = MATRIX_DIM / nprocs;
-        f = e;
-    }
+    // Dividir la matriz en bloques iguales (o casi iguales) para distribuirlos entre todos los procesos.
+    int e = MATRIX_DIM / nprocs;
+    int f = MATRIX_DIM - e * (nprocs - 1);
 
     std::vector<int> filas_por_rank(nprocs);     //filas_por_rank[4] = {6, 6, 6, 7};
     for (int i = 0; i < nprocs; i++){
@@ -89,36 +84,10 @@ int main(int argc, char* argv[]){
         desplazamientos_A[i] = i * filas_por_rank[0] * MATRIX_DIM;
     }
 
-    std::vector<int> desplazamientos_b(nprocs);     // desplazamientos_b[4] = {0, 7, 14, 21};
+    std::vector<int> desplazamientos_b(nprocs);     // desplazamientos_b[4] = {0, 6, 12, 18};
     for (int i = 0; i < nprocs; i++){
         desplazamientos_b[i] = i * filas_por_rank[0];
     }
-
-    printf("filas_por_rank: ");
-    for (int i = 0; i < nprocs; i++){
-        printf("%d ", filas_por_rank[i]);
-    }
-    printf("\n");
-
-    printf("bloques1: ");
-    for (int i = 0; i < nprocs; i++){
-        printf("%d ", elementos_por_rank_A[i]);
-    }
-    printf("\n");
-
-    printf("desplazamientos1: ");
-    for (int i = 0; i < nprocs; i++){
-        printf("%d ", desplazamientos_A[i]);
-    }
-    printf("\n");
-
-    printf("desplazamientos_b: ");
-    for (int i = 0; i < nprocs; i++){
-        printf("%d ", desplazamientos_b[i]);
-    }
-    printf("\n");
-
-
 
 
     // Buffers
@@ -154,13 +123,38 @@ int main(int argc, char* argv[]){
         {
             x[i] = 1.0;
         }
+
+        printf("\nDISPOSICION DE LOS DATOS:\n");
+        printf("filas_por_rank: ");
+        for (int i = 0; i < nprocs; i++){
+            printf("%d ", filas_por_rank[i]);
+        }
+        printf("\n");
+
+        printf("elementos_por_rank_A: ");
+        for (int i = 0; i < nprocs; i++){
+            printf("%d ", elementos_por_rank_A[i]);
+        }
+        printf("\n");
+
+        printf("desplazamientos_A: ");
+        for (int i = 0; i < nprocs; i++){
+            printf("%d ", desplazamientos_A[i]);
+        }
+        printf("\n");
+
+        printf("desplazamientos_b: ");
+        for (int i = 0; i < nprocs; i++){
+            printf("%d ", desplazamientos_b[i]);
+        }
+        printf("\n");
     }
 
     int rank_to_print = 0;
     // Imprimir vector x
     if (rank == rank_to_print)
     {
-        printf("El vector x es: \n");
+        printf("\nEl vector x es: \n");
         imprimir_vector(x.get(), MATRIX_DIM);
     }
 
