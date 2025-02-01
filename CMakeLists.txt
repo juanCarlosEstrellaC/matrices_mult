@@ -16,8 +16,8 @@ else ()
 endif ()
 include_directories(${MPI_INCLUDE_PATH})
 
-add_executable(matrices_mult main.cpp)
-
+#add_executable(matrices_mult main.cpp)
+add_executable(matrices_mult main2.cpp)
 target_link_libraries(matrices_mult ${MPI_LIBRARIES})
 
 

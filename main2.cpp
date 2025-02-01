@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <mpi.h>
+#include <vector>
 
 #define MATRIX_DIM 25
 
@@ -111,10 +112,23 @@ int main(int argc, char* argv[]){
 
     // Enviar A con Scatter. Se envía la matriz A a todos los procesos en bloques de 7 filas y 25 columnas cada uno.
     // Divide la matriz (vector, realmente) A en bloques iguales (o casi iguales) para distribuirlos entre todos los procesos.
-    MPI_Scatter(
-        A.get(),rows_per_rank * MATRIX_DIM, MPI_DOUBLE, // Envia desde A un total de 7 x 25 elementos.
-        A_local.get(),rows_per_rank * MATRIX_DIM, MPI_DOUBLE, // Recibe en A_local un total de 7 x 25 elementos.
-        0,MPI_COMM_WORLD);
+
+
+    std::unique_ptr<int[]> bloques = std::make_unique<int[]>(4);
+    bloques[0] = 7 * 25;
+    bloques[1] = 7 * 25;
+    bloques[2] = 7 * 25;
+    bloques[3] = 4 * 25;
+
+    std::unique_ptr<int[]> desplazamientos = std::make_unique<int[]>(4);
+    desplazamientos[0] = 0;
+    desplazamientos[1] = 7 * 25;
+    desplazamientos[2] = 14 * 25;
+    desplazamientos[3] = 21 * 25;
+    MPI_Scatterv(
+        A.get(), bloques.get(), desplazamientos.get(), MPI_DOUBLE, // Buffer de envío, tamaños y desplazamientos
+        A_local.get(), bloques[rank], MPI_DOUBLE,                 // Buffer de recepción y cantidad recibida
+        0, MPI_COMM_WORLD);
 
     if (rank == rank_to_print){
         printf("\nEn el Rank %d, la matriz A_local es:\n", rank);

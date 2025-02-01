@@ -6,7 +6,7 @@
 			[
 				{
 					"build" : ".",
-					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"jsonFile" : "directory-.-Release-d0094a50bb2071803777.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.30"
@@ -19,7 +19,7 @@
 					]
 				}
 			],
-			"name" : "Debug",
+			"name" : "Release",
 			"projects" : 
 			[
 				{
@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "matrices_mult::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-matrices_mult-Debug-c84d43a99bdfb70c4109.json",
+					"jsonFile" : "target-matrices_mult-Release-f32717211501440182c4.json",
 					"name" : "matrices_mult",
 					"projectIndex" : 0
 				}
@@ -49,7 +49,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/Lap/CLionProjects/matrices_mult/cmake-build-debug",
+		"build" : "C:/Users/Lap/CLionProjects/matrices_mult/cmake-build-release",
 		"source" : "C:/Users/Lap/CLionProjects/matrices_mult"
 	},
 	"version" : 
