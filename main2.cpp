@@ -47,7 +47,6 @@ int main(int argc, char* argv[]){
     int rows_alloc = MATRIX_DIM; // Tamaño final de la matriz. Por defecto es igual a MATRIX_DIM.
     int padding = 0;             // padding = relleno. Por defecto es 0.
 
-    // Ajustar el tamaño de la matriz de ser necesario.
     if (MATRIX_DIM % nprocs != 0){// Si el residuo es diferente de 0, ajustar. Ejemplo: 25 % 4 = 1, ajustar con ceil.
         rows_alloc = std::ceil((double)MATRIX_DIM / nprocs) * nprocs; // 25 / 4 = 6.25, ceil(6.25) = 7, 7 * 4 = 28
         padding = rows_alloc - MATRIX_DIM;                               // 28 - 25 = 3
@@ -125,9 +124,16 @@ int main(int argc, char* argv[]){
     desplazamientos[1] = 7 * 25;
     desplazamientos[2] = 14 * 25;
     desplazamientos[3] = 21 * 25;
+
+    int filas_por_rank[4] = {7, 7, 7, 4};
+    int desplazamientos_b[4] = {0, 7 , 14, 21};
+
+    int bloques1[4] = {7 * 25, 7 * 25, 7 * 25, 4 * 25};
+    int desplazamientos1[4] = {0, 7 * 25, 14 * 25, 21 * 25};
+
     MPI_Scatterv(
-        A.get(), bloques.get(), desplazamientos.get(), MPI_DOUBLE, // Buffer de envío, tamaños y desplazamientos
-        A_local.get(), bloques[rank], MPI_DOUBLE,                 // Buffer de recepción y cantidad recibida
+        A.get(), bloques1, desplazamientos1, MPI_DOUBLE, // Buffer de envío, tamaños y desplazamientos
+        A_local.get(), bloques1[rank], MPI_DOUBLE,                 // Buffer de recepción y cantidad recibida
         0, MPI_COMM_WORLD);
 
     if (rank == rank_to_print){
@@ -141,18 +147,21 @@ int main(int argc, char* argv[]){
         rows_per_rank_tmp -= padding;
     }
 
-    multiplicar_matriz(A_local.get(), x.get(), b_local.get(), rows_per_rank_tmp, MATRIX_DIM);
+    multiplicar_matriz(A_local.get(), x.get(), b_local.get(), filas_por_rank[rank], MATRIX_DIM);
 
     if (rank == rank_to_print){
         printf("En el Rank %d, b_local es: \n", rank);
         imprimir_vector(b_local.get(), rows_per_rank);
     }
 
-    // Enviar los resultados parciales al Rank 0 con Gather, que reune los resultados de todos los procesos en un solo proceso.
-    MPI_Gather(
+    /*MPI_Gather(
         b_local.get(),rows_per_rank,MPI_DOUBLE, // Envia desde b_local un total de 7 elementos cada proceso.
         b.get(), rows_per_rank, MPI_DOUBLE, // Recibe en b un total de 7 elementos de cada proceso.
-        0, MPI_COMM_WORLD);
+        0, MPI_COMM_WORLD);*/
+
+    MPI_Gatherv(b_local.get(), filas_por_rank[rank], MPI_DOUBLE,
+            b.get(), filas_por_rank, desplazamientos_b, MPI_DOUBLE,
+            0, MPI_COMM_WORLD);
 
     // Imprimir el vector b, que es el resultado final.
     if (rank == 0){
